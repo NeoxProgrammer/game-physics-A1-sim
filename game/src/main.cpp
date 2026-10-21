@@ -6,6 +6,7 @@
 #include <vector>
 #include <cstdio>
 #include <cassert>
+#include<string>
 using namespace std; 
 
 
@@ -37,38 +38,7 @@ struct Record2 {
 
 
 
-struct Record {
-    float test_angles[4096] = { 0.0f, 3.189f, 6.41f,9.735f,13.193f,16.87f,20.90f,25.52f, 31.37f,45.0f  };
-    float test_ranges[4096] = {}; // safety 
-    float test_times[4096] = {}; //used 4096 for safety
 
-    void calculateRangeAndTime() {
-        for (int i = 0; i < sizeof(test_angles) / sizeof(*test_angles); i++) {
-            float currentAngle = test_angles[i]; 
-            float currentRange = 0;
-            float currentTime = 0; 
-            currentRange = (VinitalSquared * sin(2 * currentAngle)) / AccelGravity;
-
-            float currentTime = (2 * Vinitial * sin(currentAngle)) / AccelGravity; 
-
-            test_ranges[i] = currentRange; 
-            test_times[i] = currentTime; 
-        }
-    }
-
-    void Save() {
-        char Buffer[4096];
-        int offset = 0;
-
-        offset += sprintf(Buffer + offset, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", test_angles[0], test_angles[1], test_angles[2], test_angles[3], test_angles[4], test_angles[5], test_angles[6], test_angles[7], test_angles[8], test_angles[9]);
-        offset += sprintf(Buffer + offset, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", test_ranges[0], test_ranges[1], test_ranges[2], test_ranges[3], test_ranges[4], test_ranges[5], test_ranges[6], test_ranges[7], test_ranges[8], test_ranges[9]); 
-        offset += sprintf(Buffer + offset, "%f,%f,%f,%f,%f,%f,%f,%f,%f,%f\n", test_times[0], test_times[1], test_times[2], test_times[3], test_times[4], test_times[5], test_times[6], test_times[7], test_times[8], test_times[9]); 
-        
-
-    }
-    
-
-}; 
 
 
 
@@ -88,6 +58,16 @@ void Save()
     assert(result);
 }
 
+
+void SaveRecord(const vector<Record2> &rec) {
+
+
+
+}
+
+
+
+
 // Note that loading is NOT required for your assignment. This was just done as a bonus to help understand .csv files!
 void Load()
 {
@@ -105,7 +85,7 @@ int main()
 {
     vector<Record2> inputRecords; 
     float test_angles[] = { 0.0f, 3.189f, 6.41f,9.735f,13.193f,16.87f,20.90f,25.52f, 31.37f,45.0f };
-    for (int i = 0; i < 9; i++) {
+    for (int i = 0; i < 10; i++) {
         Record2 record(test_angles[i]); 
         inputRecords.push_back(record); 
     }
