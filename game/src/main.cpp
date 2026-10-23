@@ -1,3 +1,8 @@
+//im assuming the results are slightly different because of the get frame time function because before i clamped it i got wonky results but since someone told me to clamp it
+// i get more accurate results "discard updating the frame if GetFrameTime() is too high"
+// code could be better optimizied but it works
+
+
 #include "raylib.h"
 #include "raymath.h"
 #include "raygui.h"
@@ -10,7 +15,7 @@
 #include <iostream>
 using namespace std; 
 
-
+bool savedOutput = false;
 Vector2 StartPos = { 10,740 }; 
 
 
@@ -23,6 +28,7 @@ int HowManyDone = 0;
 
 // made a new one so it can work better with the update function
 constexpr Vector2 GRAVITY = { 0.0f, 20.0f };
+
 
 
 struct Record2 {
@@ -46,7 +52,8 @@ struct Record2 {
 
 
         test_angle = angle;
-        float temp_angle = test_angle * 3.14f / 180.0f; 
+        
+        float temp_angle = test_angle * DEG2RAD;
         test_range = VinitalSquared * ( sin(2 * temp_angle)) / AccelGravity;
         test_time = (2 * Vinitial * sin(temp_angle)) / AccelGravity;
         Velocity.x = Vinitial * cos(temp_angle);
@@ -57,39 +64,35 @@ struct Record2 {
 
 
      void Draw() {
-        DrawCircleV(Pos, 10, MAGENTA); 
+        DrawCircleV(Pos, 7, GREEN); 
     }
 
 
     void Update() {
         
         if (active == false) {
-            HowManyDone += 1; 
+            
             return; 
         }
-        if (Pos.y < 770) {
-            active = true; 
-        }
-
-
-
-
-
-        if(active)
-        {
             //according to raylib getframe should be good enough for keeping tracking of time. 
-            sim_time += GetFrameTime(); 
-            float dt = GetFrameTime();
-            Velocity += GRAVITY * dt;
-            Pos += Velocity * dt;
-        }
+         // clamping i was talking about on the top
+         float dt = GetFrameTime();
+         if (dt > 0.33f) {
+             dt = 0.0f; // Or previous dt
+         }
+         sim_time += dt; 
+         Velocity += GRAVITY * dt;
+         Pos += Velocity * dt;
+        
 
-
+        // just pauses gameobject
         if (Pos.y > 740) {
             Pos.y = 740; 
             Pos.x = Pos.x; 
             sim_range = Pos.x - StartPos.x; 
             active = false; 
+            cout << "one of the projectiles is done\n"; 
+            HowManyDone += 1; 
             
             
         }
@@ -138,6 +141,17 @@ void SaveRecord(const vector<Record2> &records,string Filename) {
     assert(result); 
 }
 
+void SaveOutputRecord(const vector<Record2> &records,string Filename){
+    char Buffer[4096];
+    int offset = 0; 
+    for (const auto& rec : records) {
+        offset += sprintf(Buffer + offset, "%f,%f,%f\n", rec.test_angle, rec.sim_range, rec.sim_time); 
+    }
+
+    bool result = SaveFileText(Filename.c_str(), Buffer); 
+    assert(result); 
+}
+
 
 
 
@@ -181,6 +195,7 @@ int main()
 
     while (!WindowShouldClose())
     {
+        
         Vector2 mousePos = GetMousePosition();
 
        
@@ -195,24 +210,20 @@ int main()
             for (auto& proj : outputRecords) {
                 proj.Update();
                 proj.Draw(); 
-                
-                
-                
-                
             }
 
-            float elapsedTime = GetTime();
 
-            // Calculate minutes and seconds
-            int seconds = (int)elapsedTime % 60;
-            int minutes = (int)elapsedTime / 60;
 
-            // Format the string and draw it
-            char timeString[32];
-            snprintf(timeString, sizeof(timeString), "%02d:%02d", minutes, seconds);
+            if (HowManyDone == outputRecords.size() && savedOutput == false) {
+                cout << "output records should be saved now";
+                SaveOutputRecord(outputRecords, "./output.csv");
+                savedOutput = true; 
+            }
 
-            // DrawText(text, posX, posY, fontSize, color)
-            DrawText(timeString, 10, 10, 40, GREEN);
+            
+
+
+            
 
 
 
