@@ -19,6 +19,7 @@ float Vinitial = 120;
 float VinitalSquared = (Vinitial) * (Vinitial); 
 float AccelGravity = 20; 
 float Mass = 10;//not important now i guess
+int HowManyDone = 0;
 
 // made a new one so it can work better with the update function
 constexpr Vector2 GRAVITY = { 0.0f, 20.0f };
@@ -26,11 +27,17 @@ constexpr Vector2 GRAVITY = { 0.0f, 20.0f };
 
 struct Record2 {
     Vector2 Pos; 
+    
     Vector2 Velocity;
     bool active = true; 
     float test_angle =  0;
     float test_range = 0;
     float test_time = 0; 
+
+
+    float sim_range = 0.0f;
+    float sim_time = 0.0f; 
+    
     
 
     Record2(float angle) {
@@ -57,6 +64,7 @@ struct Record2 {
     void Update() {
         
         if (active == false) {
+            HowManyDone += 1; 
             return; 
         }
         if (Pos.y < 770) {
@@ -69,20 +77,21 @@ struct Record2 {
 
         if(active)
         {
+            //according to raylib getframe should be good enough for keeping tracking of time. 
+            sim_time += GetFrameTime(); 
             float dt = GetFrameTime();
             Velocity += GRAVITY * dt;
             Pos += Velocity * dt;
-
-
-
-        
         }
 
 
-        if (Pos.y >= 770) {
-            Pos.y = 770; 
+        if (Pos.y > 740) {
+            Pos.y = 740; 
             Pos.x = Pos.x; 
+            sim_range = Pos.x - StartPos.x; 
             active = false; 
+            
+            
         }
         
     }
@@ -191,6 +200,19 @@ int main()
                 
                 
             }
+
+            float elapsedTime = GetTime();
+
+            // Calculate minutes and seconds
+            int seconds = (int)elapsedTime % 60;
+            int minutes = (int)elapsedTime / 60;
+
+            // Format the string and draw it
+            char timeString[32];
+            snprintf(timeString, sizeof(timeString), "%02d:%02d", minutes, seconds);
+
+            // DrawText(text, posX, posY, fontSize, color)
+            DrawText(timeString, 10, 10, 40, GREEN);
 
 
 
