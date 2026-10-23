@@ -27,30 +27,64 @@ constexpr Vector2 GRAVITY = { 0.0f, 20.0f };
 struct Record2 {
     Vector2 Pos; 
     Vector2 Velocity;
-    bool active; 
+    bool active = true; 
     float test_angle =  0;
     float test_range = 0;
     float test_time = 0; 
     
 
     Record2(float angle) {
+
+        Pos = StartPos; 
+
+
         test_angle = angle;
         float temp_angle = test_angle * 3.14f / 180.0f; 
         test_range = VinitalSquared * ( sin(2 * temp_angle)) / AccelGravity;
         test_time = (2 * Vinitial * sin(temp_angle)) / AccelGravity;
+        Velocity.x = Vinitial * cos(temp_angle);
+        Velocity.y = -Vinitial * sin(temp_angle);
     }
 
-    void Draw() {
+
+
+
+     void Draw() {
         DrawCircleV(Pos, 10, MAGENTA); 
     }
 
 
     void Update() {
-        float dt = GetFrameTime(); 
-        Velocity.x = Vinitial * cos(test_angle); 
-        Velocity.y = Vinitial * sin(test_angle); 
-        Velocity += GRAVITY * dt; 
-        Pos += Velocity * dt; 
+        
+        if (active == false) {
+            return; 
+        }
+        if (Pos.y < 770) {
+            active = true; 
+        }
+
+
+
+
+
+        if(active)
+        {
+            float dt = GetFrameTime();
+            Velocity += GRAVITY * dt;
+            Pos += Velocity * dt;
+
+
+
+        
+        }
+
+
+        if (Pos.y >= 770) {
+            Pos.y = 770; 
+            Pos.x = Pos.x; 
+            active = false; 
+        }
+        
     }
 
 
@@ -127,7 +161,11 @@ int main()
     SaveRecord(inputRecords,"./input.csv"); 
     
 
-   
+    vector<Record2> outputRecords; 
+    for (int i = 0; i < 10; i++) {
+        Record2 record(test_angles[i]); 
+        outputRecords.push_back(record); 
+    }
 
     Save();
     Load();
@@ -136,13 +174,26 @@ int main()
     {
         Vector2 mousePos = GetMousePosition();
 
-        cout << "X: " << mousePos.x
-            << " Y: " << mousePos.y << endl;
+       
         BeginDrawing();
             ClearBackground(WHITE);
             DrawFPS(720, 10);
-            DrawLine(0, 740, 800, 740, RED);
+
+            //line for balls to stay on for semi decent visual rep
+            DrawLine(0, 770, 800, 770, RED);
             DrawCircle(10, 740, 20, BLUE); 
+
+            for (auto& proj : outputRecords) {
+                proj.Update();
+                proj.Draw(); 
+                
+                
+                
+                
+            }
+
+
+
         EndDrawing();
     }
 
