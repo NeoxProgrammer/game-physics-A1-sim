@@ -11,14 +11,23 @@
 using namespace std; 
 
 
+Vector2 StartPos = { 10,740 }; 
+
+
+
 float Vinitial = 120; 
 float VinitalSquared = (Vinitial) * (Vinitial); 
 float AccelGravity = 20; 
 float Mass = 10;//not important now i guess
 
+// made a new one so it can work better with the update function
+constexpr Vector2 GRAVITY = { 0.0f, 20.0f };
+
 
 struct Record2 {
-    
+    Vector2 Pos; 
+    Vector2 Velocity;
+    bool active; 
     float test_angle =  0;
     float test_range = 0;
     float test_time = 0; 
@@ -30,6 +39,20 @@ struct Record2 {
         test_range = VinitalSquared * ( sin(2 * temp_angle)) / AccelGravity;
         test_time = (2 * Vinitial * sin(temp_angle)) / AccelGravity;
     }
+
+    void Draw() {
+        DrawCircleV(Pos, 10, MAGENTA); 
+    }
+
+
+    void Update() {
+        float dt = GetFrameTime(); 
+        Velocity.x = Vinitial * cos(test_angle); 
+        Velocity.y = Vinitial * sin(test_angle); 
+        Velocity += GRAVITY * dt; 
+        Pos += Velocity * dt; 
+    }
+
 
 };
 
