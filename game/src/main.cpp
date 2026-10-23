@@ -1,5 +1,6 @@
 //im assuming the results are slightly different because of the get frame time function because before i clamped it i got wonky results but since someone told me to clamp it
 // i get more accurate results "discard updating the frame if GetFrameTime() is too high"
+// now results are only sligtly off
 // code could be better optimizied but it works
 
 
