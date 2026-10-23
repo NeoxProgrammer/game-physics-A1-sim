@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cassert>
 #include<string>
+#include <iostream>
 using namespace std; 
 
 
@@ -17,6 +18,7 @@ float Mass = 10;//not important now i guess
 
 
 struct Record2 {
+    
     float test_angle =  0;
     float test_range = 0;
     float test_time = 0; 
@@ -100,16 +102,24 @@ int main()
 
 
     SaveRecord(inputRecords,"./input.csv"); 
+    
 
+   
 
     Save();
     Load();
 
     while (!WindowShouldClose())
     {
+        Vector2 mousePos = GetMousePosition();
+
+        cout << "X: " << mousePos.x
+            << " Y: " << mousePos.y << endl;
         BeginDrawing();
             ClearBackground(WHITE);
             DrawFPS(720, 10);
+            DrawLine(0, 740, 800, 740, RED);
+            DrawCircle(10, 740, 20, BLUE); 
         EndDrawing();
     }
 
