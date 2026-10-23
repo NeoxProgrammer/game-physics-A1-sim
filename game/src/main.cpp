@@ -59,10 +59,15 @@ void Save()
 }
 
 
-void SaveRecord(const vector<Record2> &rec) {
+void SaveRecord(const vector<Record2> &records,string Filename) {
+    char Buffer[4096];
+    int offset = 0; 
+    for (const auto& rec : records) {
+        offset += sprintf(Buffer + offset, "%f,%f,%f\n", rec.test_angle, rec.test_range, rec.test_time);
+    }
 
-
-
+    bool result = SaveFileText(Filename.c_str(), Buffer);
+    assert(result); 
 }
 
 
@@ -93,6 +98,10 @@ int main()
     InitAudioDevice();
     SetTargetFPS(60);
 
+
+    SaveRecord(inputRecords,"./input.csv"); 
+
+
     Save();
     Load();
 
@@ -107,4 +116,5 @@ int main()
     CloseAudioDevice();
     CloseWindow();
     return 0;
+
 }
